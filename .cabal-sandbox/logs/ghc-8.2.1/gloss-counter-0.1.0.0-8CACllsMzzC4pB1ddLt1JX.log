@@ -1,0 +1,16 @@
+LICENSE: copyFile: does not exist (No such file or directory)1.0.0..
+Building executable 'gloss-counter' for gloss-counter-0.1.0.0..
+
+<no location info>: warning: [-Wmissing-home-modules]
+    These modules are needed for compilation but not listed in your .cabal file's other-modules: Controller
+                                                                                                 Model
+                                                                                                 View
+[3 of 4] Compiling View             ( src\View.hs, dist\dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter-tmp\View.o )
+[4 of 4] Compiling Main             ( src\Main.hs, dist\dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter-tmp\Main.o )
+
+<no location info>: warning: [-Wmissing-home-modules]
+    These modules are needed for compilation but not listed in your .cabal file's other-modules: Controller
+                                                                                                 Model
+                                                                                                 View
+Linking dist/dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter.exe ...
+cabal: Leaving directory '.'
