@@ -15,7 +15,11 @@ nO_SECS_BETWEEN_CYCLES = 5
 data GameState = GameState {
                    infoToShow  :: InfoToShow
                  , elapsedTime :: Float
+                 , player      :: Player
+                 , pBullets    :: [Bullet]
                  }
 
 initialState :: GameState
-initialState = GameState (ShowACircle 0 0) 0
+initialState = GameState (ShowACircle 0 0) 0 p1 []
+             where p1 = Player {pPos = (Pt 0 0), pDir = (Vec 0 0), pAim = (Vec 10 0),pHealth = 100}
+             

@@ -15,7 +15,5 @@ viewPure gstate = case infoToShow gstate of
   ShowANumber n -> color green (text (show n))
   ShowAChar   c -> color green (text [c])
   ShowACircle x y -> translate x y (color green (circleSolid 10))
-  
-
                 
  
