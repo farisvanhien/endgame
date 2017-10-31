@@ -68,7 +68,7 @@ shooting c gs | c == ' '  = gs {pBullets = newBullet : (pBullets gs)}
   
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
-    where newVec = Vec (getX c) (getY c)
+    where newVec = ((getX c),(getY c))
           oldVec = pDir (player gs)
           getX c   | c == 'd' && (oldX oldVec) > 0 = 0
                    | c == 'a' && (oldX oldVec) < 0 = 0
@@ -76,12 +76,12 @@ stopMove c gs = gs {player = setVec newVec (player gs)}
           getY c   | c == 'w' && (oldY oldVec) > 0 = 0
                    | c == 's' && (oldY oldVec) < 0 = 0
                    | otherwise = oldY oldVec
-          oldX (Vec x _) = x
-          oldY (Vec _ y) = y
+          oldX (x, _) = x
+          oldY (_, y) = y
 
 handleMove :: Char -> GameState -> GameState
 handleMove c gs = gs {player = setVec newVec (player gs)}
-    where newVec = Vec (getX c) (getY c)
+    where newVec = ((getX c),(getY c))
           oldVec = pDir (player gs)
           getX c   | c == 'd'  = moveSpeed
                    | c == 'a'  = (-moveSpeed)
@@ -89,12 +89,12 @@ handleMove c gs = gs {player = setVec newVec (player gs)}
           getY c   | c == 'w'  = moveSpeed
                    | c == 's'  = (-moveSpeed)
                    | otherwise = oldY oldVec
-          oldX (Vec x _) = x
-          oldY (Vec _ y) = y          
+          oldX (x, _) = x
+          oldY (_, y) = y        
           
-setVec :: Play.Vector -> Player -> Player
+setVec :: Vector -> Player -> Player
 setVec v p = p {pDir = v}
           
 printPlayer :: Player -> InfoToShow
 printPlayer (Player {pPos = pos}) = f1 pos
-    where f1 (Pt x y) = ShowACircle x y
+    where f1 (x, y) = ShowACircle x y

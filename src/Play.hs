@@ -1,5 +1,7 @@
 module Play where
 import Data.List
+import Graphics.Gloss
+import Graphics.Gloss.Interface.IO.Game
 
 data Player = Player {
                  pPos    :: Point
@@ -15,10 +17,12 @@ data Enemy = Enemy {
                , eHealth :: Int
                , eType   :: EType
                    }
-                   
+         
+{-         
 data Point = Pt Float Float
            deriving (Show, Eq)
-
+-}
+           
 data Bullet = Bullet {  
                  bPos   :: Point
                , bDir   :: Vector
@@ -30,12 +34,14 @@ data EType = NormalE
            | DamageE
            | HealthE
            deriving (Show)
-           
+          
+{-          
 data Vector = Vec Float Float
             deriving (Show)
+            -}
           
 plusVec :: Vector -> Vector -> Vector
-plusVec (Vec x1 y1) (Vec x2 y2) = Vec (x1 + x2) (y1 + y2)
+plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
             
 moveSpeed :: Float
 moveSpeed = 10
@@ -50,20 +56,20 @@ vecDown  :: Vector
 vecDown  = Vec 0 (-moveSpeed)
 -}
 vecInit  :: Vector
-vecInit  = Vec 0 0
+vecInit  = (0, 0)
 
 normalizeVector :: Vector -> Vector
-normalizeVector (Vec f1 f2) = Vec (f1/l) (f2/l)
+normalizeVector (f1, f2) = ((f1/l), (f2/l))
                                where l = sqrt(f1*f1 + f2*f2)
                                
 movePoint :: Point -> Vector -> Point
-movePoint (Pt p1 p2) (Vec v1 v2) = Pt (p1+v1) (p2+v2)
+movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 
 shoot :: Point -> Vector -> Int -> [Bullet] -> [Bullet]
 shoot p v i bs = Bullet {bPos=p, bDir=v, damage=i} : bs
 
 bulletHit :: Point -> Point -> Float -> Bool
-bulletHit (Pt p1 p2) (Pt p3 p4) r =
+bulletHit (p1, p2) (p3, p4) r =
                (p1 >= (p3 - r)) && (p1 <= (p3 + r)) && (p2 >= (p4 - r)) && (p2 <= (p4 + r))
 
 {-
