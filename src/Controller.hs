@@ -83,14 +83,14 @@ handleMove :: Char -> GameState -> GameState
 handleMove c gs = gs {player = setVec newVec (player gs)}
     where newVec = ((getX c),(getY c))
           oldVec = pDir (player gs)
-          getX c   | c == 'd'  = moveSpeed
-                   | c == 'a'  = (-moveSpeed)
+          getX c   | c == 'd' && (oldX oldVec < 300) = moveSpeed
+                   | c == 'a' && (oldX oldVec > (-300)) = (-moveSpeed)
                    | otherwise = oldX oldVec
-          getY c   | c == 'w'  = moveSpeed
-                   | c == 's'  = (-moveSpeed)
+          getY c   | c == 'w' && (oldY oldVec < 300) = moveSpeed
+                   | c == 's' && (oldY oldVec > (-300)) = (-moveSpeed)
                    | otherwise = oldY oldVec
           oldX (x, _) = x
-          oldY (_, y) = y        
+          oldY (_, y) = y
           
 setVec :: Vector -> Player -> Player
 setVec v p = p {pDir = v}
