@@ -1,16 +1,28 @@
-LICENSE: copyFile: does not exist (No such file or directory)1.0.0..
+Preprocessing executable 'gloss-counter' for gloss-counter-0.1.0.0..
 Building executable 'gloss-counter' for gloss-counter-0.1.0.0..
 
 <no location info>: warning: [-Wmissing-home-modules]
     These modules are needed for compilation but not listed in your .cabal file's other-modules: Controller
                                                                                                  Model
+                                                                                                 Play
                                                                                                  View
-[3 of 4] Compiling View             ( src\View.hs, dist\dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter-tmp\View.o )
-[4 of 4] Compiling Main             ( src\Main.hs, dist\dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter-tmp\Main.o )
+[1 of 5] Compiling Play             ( src\Play.hs, dist\dist-sandbox-d2903eee\build\gloss-counter\gloss-counter-tmp\Play.o )
 
-<no location info>: warning: [-Wmissing-home-modules]
-    These modules are needed for compilation but not listed in your .cabal file's other-modules: Controller
-                                                                                                 Model
-                                                                                                 View
-Linking dist/dist-sandbox-bfef5ff7\build\gloss-counter\gloss-counter.exe ...
+src\Play.hs:3:1: error:
+    Could not find module `Graphics.Gloss'
+    There are files missing in the `gloss-1.11.1.1' package,
+    try running 'ghc-pkg check'.
+    Use -v to see a list of the files searched for.
+  |
+3 | import Graphics.Gloss
+  | ^^^^^^^^^^^^^^^^^^^^^
+
+src\Play.hs:4:1: error:
+    Could not find module `Graphics.Gloss.Interface.IO.Game'
+    There are files missing in the `gloss-1.11.1.1' package,
+    try running 'ghc-pkg check'.
+    Use -v to see a list of the files searched for.
+  |
+4 | import Graphics.Gloss.Interface.IO.Game
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 cabal: Leaving directory '.'

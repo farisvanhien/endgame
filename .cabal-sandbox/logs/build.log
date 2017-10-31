@@ -52,3 +52,33 @@ dependencies: base-4.10.0.0 gloss-1.11.1.1 random-1.1
 install-outcome: InstallFailed
 docs-outcome: NotTried
 tests-outcome: NotTried
+
+package: gloss-counter-0.1.0.0
+os: windows
+arch: x86_64
+compiler: ghc-8.2.1
+client: cabal-install-2.0.0.0
+dependencies: base-4.10.0.0 gloss-1.11.1.1 random-1.1
+install-outcome: BuildFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: gloss-counter-0.1.0.0
+os: windows
+arch: x86_64
+compiler: ghc-8.2.1
+client: cabal-install-2.0.0.0
+dependencies: base-4.10.0.0 gloss-1.11.1.1 random-1.1
+install-outcome: BuildFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: gloss-counter-0.1.0.0
+os: windows
+arch: x86_64
+compiler: ghc-8.2.1
+client: cabal-install-2.0.0.0
+dependencies: base-4.10.0.0 gloss-1.11.1.1 random-1.1
+install-outcome: BuildFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
