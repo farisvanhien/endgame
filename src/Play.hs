@@ -44,7 +44,7 @@ plusVec :: Vector -> Vector -> Vector
 plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
             
 moveSpeed :: Float
-moveSpeed = 10
+moveSpeed = 5
 {-
 vecRight :: Vector
 vecRight = Vec   moveSpeed  0
