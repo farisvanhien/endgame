@@ -21,5 +21,5 @@ data GameState = GameState {
 
 initialState :: GameState
 initialState = GameState (ShowACircle 0 0) 0 p1 []
-             where p1 = Player {pPos = (Pt 0 0), pDir = (Vec 0 0), pAim = (Vec 10 0),pHealth = 100}
+             where p1 = Player {pPos = (0, 0), pDir = (0, 0), pAim = (10, 0),pHealth = 100}
              
