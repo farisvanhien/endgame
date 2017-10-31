@@ -20,7 +20,7 @@ step secs gstate@(GameState {player = pp})
     do randomNumber <- randomIO
        let newNumber = abs randomNumber `mod` 10
        return $ GameState (ShowANumber newNumber) 0 pp 
-  | otherwise 
+  | otherwise
   = -- Just update the elapsed time
     return $ gstate { elapsedTime = elapsedTime gstate + secs } 
 -}
@@ -30,7 +30,7 @@ step secs gstate@(GameState {player = pp})
         resetDirP = setVec vecInit mpp --resets the direction vector
         oldGS = gstate {infoToShow = printPlayer mpp, elapsedTime = elapsedTime gstate + secs, player = mpp}
         newGS = updateEntities oldGS
-        updateEntities = movePBullets
+        updateEntities = movePBullets >>> stayInField
         
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -56,9 +56,23 @@ moveB [] = []
 moveB (x:xs) = (move x) : (moveB xs)
 
 
+stayInField :: GameState -> GameState
+stayInField gs = gs {player = setPos newPos (player gs)}
+               where pos = pPos (player gs)
+                     newPos = ((getX),(getY))
+                     getX | oldX pos > temp = temp2
+                          | oldX pos < (-temp) = (-temp2)
+                          | otherwise = oldX pos
+                     getY | oldY pos > temp = temp2
+                          | oldY pos < (-temp) = (-temp2)
+                          | otherwise = oldY pos
+                     oldX (x, _) = x
+                     oldY (_, y) = y
 
-
-
+temp :: Float
+temp = 400
+temp2 :: Float
+temp2 = temp - moveSpeed
 
 shooting :: Char -> GameState -> GameState
 shooting c gs | c == ' '  = gs {pBullets = newBullet : (pBullets gs)}
@@ -94,6 +108,9 @@ handleMove c gs = gs {player = setVec newVec (player gs)}
           
 setVec :: Vector -> Player -> Player
 setVec v p = p {pDir = v}
+
+setPos :: Point -> Player -> Player
+setPos po p = p {pPos = po}
           
 printPlayer :: Player -> InfoToShow
 printPlayer (Player {pPos = pos}) = f1 pos

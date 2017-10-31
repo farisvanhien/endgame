@@ -12,10 +12,11 @@ view = return . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gstate@(GameState {infoToShow = info}) = infoToPicture info
-  
-combinePicture :: Picture -> Picture
-combinePicture = undefined
-
+   {-
+combinePicture :: [InfoToShow] -> Picture
+combinePicture [] = []
+combinePicture (x:xs) = (infoToPicture x) : combinePicture xs
+-}
 infoToPicture :: InfoToShow -> Picture
 infoToPicture info = case info of
   ShowNothing   -> blank
