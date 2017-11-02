@@ -94,7 +94,7 @@ shoot :: Float -> Float -> GameState -> GameState
 shoot xPos yPos gstate = gstate {pBullets = list}
 		where 
 			normVec = normalizeV newVec
-			newVec = calVec playerPos (xPos, yPos)
+			newVec = playerPos - (xPos, yPos)
 			bullet = Bullet playerPos normVec 10
 			list = bullet : (pBullets gstate)
 			playerPos = pPos (player gstate)
