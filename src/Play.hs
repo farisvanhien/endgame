@@ -110,4 +110,4 @@ instance Moves Bullet where
     position  (Bullet {bPos = pos}) = pos
     direction (Bullet {bDir = dir}) = dir
 --ADJUST
-    move (Bullet {bPos = pos, bDir = dir, damage = d}) = Bullet {bPos = (movePoint pos dir), bDir = dir, damage = d}
+    move (Bullet {bPos = pos, bDir = dir}) = Bullet {bPos = (movePoint pos dir)}

@@ -32,7 +32,7 @@ step secs gstate@(GameState {player = pp})
         resetDirP = setVec vecInit mpp --resets the direction vector
         oldGS = gstate {infoToShow = [printPlayer mpp], elapsedTime = elapsedTime gstate + secs, player = mpp}
         newGS = updateEntities oldGS
-        updateEntities = movePBullets >>> stayInField
+        updateEntities = movePBullets >>> stayInField >>> makeInfoList
         
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -48,7 +48,11 @@ inputKey (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) gstate = shoot 
 inputKey _ gstate = gstate -- Otherwise keep the same
 
 
-
+makeInfoList :: GameState -> GameState
+makeInfoList gstate = gstate {infoToShow = newList}
+        where p1 = player gstate
+              bs1 = pBullets gstate
+              newList = (printPlayer p1) : (printBullets bs1)
 
 --move player bullets
 movePBullets :: GameState -> GameState
@@ -131,4 +135,11 @@ setPos po p = p {pPos = po}
           
 printPlayer :: Player -> InfoToShow
 printPlayer (Player {pPos = pos}) = f1 pos
+    where f1 (x, y) = ShowACircle x y
+    
+printBullets :: [Bullet] -> [InfoToShow]
+printBullets bullets = map printBullet bullets
+
+printBullet :: Bullet -> InfoToShow
+printBullet (Bullet {bPos = pos}) = f1 pos
     where f1 (x, y) = ShowACircle x y
