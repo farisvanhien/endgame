@@ -70,10 +70,7 @@ movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 bulletHit :: Point -> Point -> Float -> Bool
 bulletHit (p1, p2) (p3, p4) r =
                (p1 >= (p3 - r)) && (p1 <= (p3 + r)) && (p2 >= (p4 - r)) && (p2 <= (p4 + r))
-
-			   
-calVec :: Point -> Point -> Vector
-calVec (a, b) (c, d) = ((c - a), (d - b))
+	
 			   
 {-
 data MoveDir = Up
