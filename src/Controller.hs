@@ -30,7 +30,7 @@ step secs gstate@(GameState {player = pp})
     return $ newGS
   where mpp = move pp                  --calculate new position od Player
         resetDirP = setVec vecInit mpp --resets the direction vector
-        oldGS = gstate {infoToShow = printPlayer mpp, elapsedTime = elapsedTime gstate + secs, player = mpp}
+        oldGS = gstate {infoToShow = [printPlayer mpp], elapsedTime = elapsedTime gstate + secs, player = mpp}
         newGS = updateEntities oldGS
         updateEntities = movePBullets >>> stayInField
         
