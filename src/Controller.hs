@@ -1,4 +1,5 @@
 -- | This module defines how the state changes
+-- | This module defines how the state changes
 --   in response to time and user input
 module Controller where
 
@@ -7,6 +8,7 @@ import Model
 import Control.Arrow
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
+import Graphics.Gloss.Data.Vector
 import System.Random
 import Play
 
@@ -39,10 +41,12 @@ input e gstate = return (inputKey e gstate)
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate
     = inputController gstate
-    where inputController = (handleMove c) >>> (shooting c)
+    where inputController = (handleMove c)
 inputKey (EventKey (Char c) Up _ _) gstate
     = stopMove c gstate
+inputKey (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) gstate = shoot xPos yPos gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
+
 
 
 
@@ -74,12 +78,25 @@ temp = 400
 temp2 :: Float
 temp2 = temp - moveSpeed
 
+{-
 shooting :: Char -> GameState -> GameState
 shooting c gs | c == ' '  = gs {pBullets = newBullet : (pBullets gs)}
               | otherwise = gs
               where newBullet = Bullet (pPos p) (pAim p) 10
                     p = player gs
+  -}
   
+shoot :: Float -> Float -> GameState -> GameState
+shoot xPos yPos gstate = gstate {pBullets = list}
+		where 
+			normVec = normalizeV newVec
+			newVec = calVec playerPos (xPos, yPos)
+			bullet = Bullet playerPos normVec 10
+			list = bullet : (pBullets gstate)
+			playerPos = pPos (player gstate)
+			  
+
+
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
     where newVec = ((getX c),(getY c))

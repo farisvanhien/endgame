@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Play where
 import Data.List
 import Graphics.Gloss
@@ -65,13 +67,14 @@ normalizeVector (f1, f2) = ((f1/l), (f2/l))
 movePoint :: Point -> Vector -> Point
 movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 
-shoot :: Point -> Vector -> Int -> [Bullet] -> [Bullet]
-shoot p v i bs = Bullet {bPos=p, bDir=v, damage=i} : bs
-
 bulletHit :: Point -> Point -> Float -> Bool
 bulletHit (p1, p2) (p3, p4) r =
                (p1 >= (p3 - r)) && (p1 <= (p3 + r)) && (p2 >= (p4 - r)) && (p2 <= (p4 + r))
 
+			   
+calVec :: Point -> Point -> Vector
+calVec (a, b) (c, d) = ((c - a), (d - b))
+			   
 {-
 data MoveDir = Up
              | Down
