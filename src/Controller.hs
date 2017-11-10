@@ -68,6 +68,7 @@ pewPew c gs | c == 'p' = shoot 0 200 gs
             | otherwise = gs
 
 
+
 stayInField :: GameState -> GameState
 stayInField gs = gs {player = setPos newPos (player gs)}
                where pos = pPos (player gs)
@@ -100,7 +101,11 @@ shoot xPos yPos gstate = gstate {pBullets = list}
             bullet = Bullet playerPos speedVec 10
             list = bullet : (pBullets gstate)
             playerPos = pPos (player gstate)
+<<<<<<< HEAD
 			speedVec = normVec * 2
+=======
+            speedVec = 2*normVec
+>>>>>>> 48ee60f706d342e53487220028fa9aa3c40392a2
 
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
