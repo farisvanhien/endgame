@@ -97,9 +97,10 @@ shoot xPos yPos gstate = gstate {pBullets = list}
         where 
             normVec = normalizeV newVec
             newVec = (xPos, yPos) - playerPos
-            bullet = Bullet playerPos normVec 10
+            bullet = Bullet playerPos speedVec 10
             list = bullet : (pBullets gstate)
             playerPos = pPos (player gstate)
+			speedVec = normVec * 2
 
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
