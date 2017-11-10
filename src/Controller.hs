@@ -95,18 +95,15 @@ fieldHeight = 400
   
 shoot :: Float -> Float -> GameState -> GameState
 shoot xPos yPos gstate = gstate {pBullets = list}
-        where 
-            normVec = normalizeV newVec
-            newVec = (xPos, yPos) - playerPos
-            bullet = Bullet playerPos speedVec 10
-            list = bullet : (pBullets gstate)
-            playerPos = pPos (player gstate)
-<<<<<<< HEAD
-			speedVec = normVec * 2
-=======
-            speedVec = 2*normVec
->>>>>>> 48ee60f706d342e53487220028fa9aa3c40392a2
-
+        where
+			speedVec = 4*normVec
+			normVec = normalizeV newVec
+			newVec = (xPos, yPos) - playerPos
+			bullet = Bullet playerPos speedVec 10
+			list = bullet : (pBullets gstate)
+			playerPos = pPos (player gstate)
+			
+			
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
     where newVec = ((getPX c),(getPY c))

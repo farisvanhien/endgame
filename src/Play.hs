@@ -36,7 +36,7 @@ plusVec :: Vector -> Vector -> Vector
 plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
             
 moveSpeed :: Float
-moveSpeed = 5
+moveSpeed = 3
 vecInit  :: Vector
 vecInit  = (0, 0)
 playerColor :: Color
