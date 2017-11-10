@@ -4,7 +4,6 @@
 module Controller where
 
 import Model
-
 import Control.Arrow
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -32,7 +31,7 @@ step secs gstate@(GameState {player = pp})
         resetDirP = setVec vecInit mpp --resets the direction vector
         oldGS = gstate {infoToShow = [printPlayer mpp], elapsedTime = elapsedTime gstate + secs, player = mpp}
         newGS = updateEntities oldGS
-        updateEntities = movePBullets >>> stayInField >>> makeInfoList
+        updateEntities = movePBullets >>> stayInField >>> deleteOutOfField >>> makeInfoList
         
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -41,18 +40,18 @@ input e gstate = return (inputKey e gstate)
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate
     = inputController gstate
-    where inputController = (handleMove c)
+    where inputController = (handleMove c) >>> (pewPew c)
 inputKey (EventKey (Char c) Up _ _) gstate
     = stopMove c gstate
-inputKey (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) gstate = shoot xPos yPos gstate
+inputKey (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) gstate 
+    =  shoot xPos yPos gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
-
 
 makeInfoList :: GameState -> GameState
 makeInfoList gstate = gstate {infoToShow = newList}
         where p1 = player gstate
               bs1 = pBullets gstate
-              newList = (printPlayer p1) : (printBullets bs1)
+              newList = (printBullets bs1) ++ [printPlayer p1]
 
 --move player bullets
 movePBullets :: GameState -> GameState
@@ -64,69 +63,66 @@ moveB [] = []
 moveB (x:xs) = (move x) : (moveB xs)
 
 
+pewPew :: Char -> GameState -> GameState
+pewPew c gs | c == 'p' = shoot 0 200 gs
+            | otherwise = gs
+
+
 stayInField :: GameState -> GameState
 stayInField gs = gs {player = setPos newPos (player gs)}
                where pos = pPos (player gs)
-                     newPos = ((getX),(getY))
-                     getX | oldX pos > temp = temp2
-                          | oldX pos < (-temp) = (-temp2)
-                          | otherwise = oldX pos
-                     getY | oldY pos > temp = temp2
-                          | oldY pos < (-temp) = (-temp2)
-                          | otherwise = oldY pos
-                     oldX (x, _) = x
-                     oldY (_, y) = y
+                     newPos = ((getPX),(getPY))
+                     getPX | getX pos > fieldWidth    = fieldWidth - moveSpeed
+                           | getX pos < (-fieldWidth) = (-fieldWidth) + moveSpeed
+                           | otherwise = getX pos
+                     getPY | getY pos > fieldHeight    = fieldHeight - moveSpeed
+                           | getY pos < (-fieldHeight) = (-fieldHeight) + moveSpeed
+                           | otherwise = getY pos
+                           
+deleteOutOfField :: GameState -> GameState                           
+deleteOutOfField gs = gs {pBullets = newBL}
+                    where newBL = filter p (pBullets gs)
+                          p (Bullet {bPos = pos}) = (pointInField pos)
+                        
+pointInField :: Point -> Bool
+pointInField p@(x,y) = (x > (-fieldWidth)) && (x < fieldWidth) && (y > (-fieldHeight)) && (y < fieldHeight)
 
-temp :: Float
-temp = 400
-temp2 :: Float
-temp2 = temp - moveSpeed
-
-{-
-shooting :: Char -> GameState -> GameState
-shooting c gs | c == ' '  = gs {pBullets = newBullet : (pBullets gs)}
-              | otherwise = gs
-              where newBullet = Bullet (pPos p) (pAim p) 10
-                    p = player gs
-  -}
+fieldWidth :: Float 
+fieldWidth = 400
+fieldHeight :: Float
+fieldHeight = 400
   
 shoot :: Float -> Float -> GameState -> GameState
 shoot xPos yPos gstate = gstate {pBullets = list}
-		where 
-			normVec = normalizeV newVec
-			newVec = playerPos - (xPos, yPos)
-			bullet = Bullet playerPos normVec 10
-			list = bullet : (pBullets gstate)
-			playerPos = pPos (player gstate)
-			  
-
+        where 
+            normVec = normalizeV newVec
+            newVec = (xPos, yPos) - playerPos
+            bullet = Bullet playerPos normVec 10
+            list = bullet : (pBullets gstate)
+            playerPos = pPos (player gstate)
 
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setVec newVec (player gs)}
-    where newVec = ((getX c),(getY c))
+    where newVec = ((getPX c),(getPY c))
           oldVec = pDir (player gs)
-          getX c   | c == 'd' && (oldX oldVec) > 0 = 0
-                   | c == 'a' && (oldX oldVec) < 0 = 0
-                   | otherwise = oldX oldVec
-          getY c   | c == 'w' && (oldY oldVec) > 0 = 0
-                   | c == 's' && (oldY oldVec) < 0 = 0
-                   | otherwise = oldY oldVec
-          oldX (x, _) = x
-          oldY (_, y) = y
+          getPX c   | c == 'd' && (getX oldVec) > 0 = 0
+                    | c == 'a' && (getX oldVec) < 0 = 0
+                    | otherwise = getX oldVec
+          getPY c   | c == 'w' && (getY oldVec) > 0 = 0
+                    | c == 's' && (getY oldVec) < 0 = 0
+                    | otherwise = getY oldVec
 
 handleMove :: Char -> GameState -> GameState
 handleMove c gs = gs {player = setVec newVec (player gs)}
-    where newVec = ((getX c),(getY c))
+    where newVec = ((getPX c),(getPY c))
           oldVec = pDir (player gs)
-          getX c   | c == 'd' && (oldX oldVec < 300) = moveSpeed
-                   | c == 'a' && (oldX oldVec > (-300)) = (-moveSpeed)
-                   | otherwise = oldX oldVec
-          getY c   | c == 'w' && (oldY oldVec < 300) = moveSpeed
-                   | c == 's' && (oldY oldVec > (-300)) = (-moveSpeed)
-                   | otherwise = oldY oldVec
-          oldX (x, _) = x
-          oldY (_, y) = y
-          
+          getPX c   | c == 'd'  = moveSpeed
+                    | c == 'a'  = (-moveSpeed)
+                    | otherwise = getX oldVec
+          getPY c   | c == 'w'  = moveSpeed
+                    | c == 's'  = (-moveSpeed)
+                    | otherwise = getY oldVec
+                    
 setVec :: Vector -> Player -> Player
 setVec v p = p {pDir = v}
 
@@ -135,11 +131,12 @@ setPos po p = p {pPos = po}
           
 printPlayer :: Player -> InfoToShow
 printPlayer (Player {pPos = pos}) = f1 pos
-    where f1 (x, y) = ShowACircle x y
+    where f1 (x, y) = ShowACircle x y playerColor playerRadius
     
 printBullets :: [Bullet] -> [InfoToShow]
-printBullets bullets = map printBullet bullets
+printBullets [] = []
+printBullets bullets@(x:xs) = map printBullet bullets
 
 printBullet :: Bullet -> InfoToShow
 printBullet (Bullet {bPos = pos}) = f1 pos
-    where f1 (x, y) = ShowACircle x y
+    where f1 (x, y) = ShowACircle x y playerBulletColor playerBulletRadius

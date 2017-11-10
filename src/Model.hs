@@ -3,11 +3,12 @@
 module Model where
 
 import Play
+import Graphics.Gloss
 
 data InfoToShow = ShowNothing
                 | ShowANumber Int
                 | ShowAChar   Char
-                | ShowACircle Float Float
+                | ShowACircle Float Float Color Float
 
 nO_SECS_BETWEEN_CYCLES :: Float
 nO_SECS_BETWEEN_CYCLES = 5
@@ -20,6 +21,5 @@ data GameState = GameState {
                  }
 
 initialState :: GameState
-initialState = GameState [ShowACircle 0 0] 0 p1 []
+initialState = GameState [ShowACircle 0 0 playerColor playerRadius] 0 p1 []
              where p1 = Player {pPos = (0, 0), pDir = (0, 0), pAim = (10, 0),pHealth = 100}
-             

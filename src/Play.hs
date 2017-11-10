@@ -19,11 +19,6 @@ data Enemy = Enemy {
                , eHealth :: Int
                , eType   :: EType
                    }
-         
-{-         
-data Point = Pt Float Float
-           deriving (Show, Eq)
--}
            
 data Bullet = Bullet {  
                  bPos   :: Point
@@ -37,28 +32,26 @@ data EType = NormalE
            | HealthE
            deriving (Show)
           
-{-          
-data Vector = Vec Float Float
-            deriving (Show)
-            -}
-          
 plusVec :: Vector -> Vector -> Vector
 plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
             
 moveSpeed :: Float
 moveSpeed = 5
-{-
-vecRight :: Vector
-vecRight = Vec   moveSpeed  0
-vecLeft  :: Vector
-vecLeft  = Vec (-moveSpeed) 0
-vecUp    :: Vector
-vecUp    = Vec 0   moveSpeed
-vecDown  :: Vector
-vecDown  = Vec 0 (-moveSpeed)
--}
 vecInit  :: Vector
 vecInit  = (0, 0)
+playerColor :: Color
+playerColor = green
+playerRadius :: Float
+playerRadius = 10
+playerBulletColor :: Color
+playerBulletColor = white
+playerBulletRadius :: Float
+playerBulletRadius = 5
+
+getX :: Point -> Float
+getX (x,_) = x
+getY :: Point -> Float
+getY (_,y) = y
 
 normalizeVector :: Vector -> Vector
 normalizeVector (f1, f2) = ((f1/l), (f2/l))
@@ -70,28 +63,12 @@ movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 bulletHit :: Point -> Point -> Float -> Bool
 bulletHit (p1, p2) (p3, p4) r =
                (p1 >= (p3 - r)) && (p1 <= (p3 + r)) && (p2 >= (p4 - r)) && (p2 <= (p4 + r))
-	
-			   
-{-
-data MoveDir = Up
-             | Down
-             | Left
-             | Right
-             deriving (Eq)
                
-movePlayerDir :: Player -> MoveDir -> Player
-movePlayerDir (Player {pPos = oldPos,pHealth=h}) movd | movd == Up        = Player {pPos = movePoint oldPos (Vec 0  1),   h}
-                                                      | movd == Down      = Player {pPos = movePoint oldPos (Vec 0 (-1)), h}
-                                                      | movd == Play.Left = Player {pPos = movePoint oldPos (Vec (-1) 0), h}
-                                                      | otherwise         = Player {pPos = movePoint oldPos (Vec 1  0),   h}
--}
-
-
 class Moves a where
     position :: a -> Point
     direction:: a -> Vector
     move     :: a -> a
-    
+   
 instance Moves Player where
     position  (Player {pPos = pos}) = pos
     direction (Player {pDir = dir}) = dir
@@ -107,4 +84,4 @@ instance Moves Bullet where
     position  (Bullet {bPos = pos}) = pos
     direction (Bullet {bDir = dir}) = dir
 --ADJUST
-    move (Bullet {bPos = pos, bDir = dir}) = Bullet {bPos = (movePoint pos dir)}
+    move (Bullet {bPos = pos, bDir = dir}) = Bullet {bPos = (movePoint pos dir), bDir = dir}
