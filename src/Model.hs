@@ -18,6 +18,7 @@ nO_SECS_BETWEEN_CYCLES = 5
 data PlayStatus = Playing
                 | Paused
                 | GameOver
+				| WriteFile
                 deriving (Eq, Show)
 
 data GameState = GameState {

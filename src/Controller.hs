@@ -27,19 +27,22 @@ step secs gstate@(GameState {player = pp, playStatus = status})
   = -- Just update the elapsed time
     return $ gstate { elapsedTime = elapsedTime gstate + secs } 
 -}
-  = -- Just update the elapsed time
-    return $ newGS
-  where newGS | status == Playing  = updateEntities gstate
-              | status == GameOver = gameOverScreen gstate
-              | otherwise          = gstate
-        updateEntities = movePlayer >>> stayInField
+  
+  = newGS
+		where  
+		newGS | status == Playing   = return $ updateEntities gstate
+			  | status == GameOver  = return $ gameOverScreen gstate
+			  | status == WriteFile = setHighscore gstate
+			  | otherwise           = return $ gstate
+		updateEntities = movePlayer >>> stayInField
                          >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
                          >>> moveEbullets >>> movePBullets >>> deleteOutOfField 
                          >>> pBulletCollision >>> deleteDeadEnemies
                          >>> eBulletCollision >>> playerAlive
-                         >>> makeInfoList 
-        gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
-                       where popup = ShowAString (-360) 0 "Game Over"
+                         >>> makeInfoList
+		gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
+						where 
+						popup = ShowAString (-360) 0 "Game Over"	
         
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate {infoToShow = [printPlayer mpp], player = mpp}
@@ -71,10 +74,13 @@ makeInfoList gstate = gstate {infoToShow = newList}
           newList = (printScore sco) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1]
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
 		  
-setHighscore :: GameState -> IO()		  
+setHighscore :: GameState -> IO GameState	  
 setHighscore gs =
-		do file <- readFile "/data/Highscore.txt"
-		   writeFile "/data/Highscore.txt" (highscore gs file)
+		do file <- readFile "./data/Highscore.txt"
+		   putStrLn file
+		   writeFile "./data/Highscore.txt" (highscore gs file)
+		   return gs {playStatus = GameOver}
+
 		  
 highscore :: GameState -> String -> String
 highscore gs s | score gs > highscoreS = scoreS
@@ -220,7 +226,7 @@ delDeadEs ((e:es),e2,i) | isDead e  = delDeadEs (es,e2,(i+10))
                         | otherwise = delDeadEs (es,(e:e2),i)
 
 playerAlive :: GameState -> GameState 
-playerAlive gs | isDead (player gs) = gs {playStatus = GameOver}
+playerAlive gs | isDead (player gs) = gs {playStatus = WriteFile}
                | otherwise = gs
                         
 --Let the enemies shoot at random times
