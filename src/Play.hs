@@ -32,6 +32,14 @@ data EType = NormalE
            | DamageE
            | HealthE
            deriving (Show)
+           
+data Particle = Particle {
+                        parPos :: Point 
+                      , parDir :: Vector
+                      , stepsToLive :: Int
+                      , parColor :: Color
+                      , parSize   :: Float
+                         }
           
 plusVec :: Vector -> Vector -> Vector
 plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
@@ -98,6 +106,13 @@ instance Moves Bullet where
     setPos pos b = b {bPos = pos}
     setDir dir b = b {bDir = dir}
     move b@(Bullet {bPos = pos, bDir = dir}) = b {bPos = (movePoint pos dir)}
+    
+instance Moves Particle where
+    position  (Particle {parPos = pos}) = pos
+    direction (Particle {parDir = dir}) = dir
+    setPos pos p = p {parPos = pos}
+    setDir dir p = p {parDir = dir}
+    move par@(Particle {parPos = pos, parDir = dir}) = par {parPos = (movePoint pos dir)}
     
 class Health a where 
     health :: a -> Int 

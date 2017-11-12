@@ -34,6 +34,7 @@ data GameState = GameState {
                  }
 
 initialState :: GameState
+<<<<<<< HEAD
 initialState = GameState i1 Playing 0 p1 [] [] [] g1 0
             where i1 = [ShowACircle 0 0 playerColor playerRadius]
                   p1 = Player {pPos = (0, 0), pDir = (0, 0), pAim = (10, 0),pHealth = 100}
@@ -45,4 +46,6 @@ initialState = GameState i1 Playing 0 p1 [] [] [] g1 0
 						
 						
 						
-						
+												
+=======
+>>>>>>> cac0dd0bb545ee3a1351612642289e9355e2553d
