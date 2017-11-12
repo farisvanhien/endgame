@@ -17,17 +17,6 @@ import Data.Maybe
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate@(GameState {player = pp, playStatus = status})
-{- 
-  | elapsedTime gstate + secs > nO_SECS_BETWEEN_CYCLES
-  = -- We show a new random number
-    do randomNumber <- randomIO
-       let newNumber = abs randomNumber `mod` 10 
-       return $ GameState (ShowANumber newNumber) 0 pp 
-  | otherwise
-  = -- Just update the elapsed time
-    return $ gstate { elapsedTime = elapsedTime gstate + secs } 
--}
-  
   = newGS
         where  
         newGS | status == Playing   = return $ updateEntities gstate
@@ -43,7 +32,7 @@ step secs gstate@(GameState {player = pp, playStatus = status})
                          >>> makeInfoList
         gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
                         where 
-                        popup = ShowAString (-360) 0 "Game Over"	
+                        popup = ShowAString (-360) 0 "Game Over"
         
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate {infoToShow = [printPlayer mpp], player = mpp}
@@ -76,20 +65,19 @@ makeInfoList gstate = gstate {infoToShow = newList}
           newList = (printScore (sco)) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1] ++ (printParticles pars)
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
 
-setHighscore :: GameState -> IO GameState	  
+setHighscore :: GameState -> IO GameState
 setHighscore gs =
-		do file <- readFile "./data/Highscore.txt"
-		   putStrLn file
-		   writeFile "./data/Highscore.txt" (highscore gs file)
-		   return gs {playStatus = GameOver}
+        do file <- readFile "./data/Highscore.txt"
+           putStrLn file
+           writeFile "./data/Highscore.txt" (highscore gs file)
+           return gs {playStatus = GameOver}
 
-		  
 highscore :: GameState -> String -> String
 highscore gs s | score gs > highscoreS = scoreS
-			   | otherwise		 	   = s
-			   where 
-			   highscoreS = read s
-			   scoreS	  = show (score gs)
+               | otherwise             = s
+               where 
+               highscoreS = read s
+               scoreS     = show (score gs)
 
 togglePause :: GameState -> GameState
 togglePause gs@(GameState {playStatus = ps})
@@ -126,7 +114,7 @@ newEnemy gs = gs {enemies = eList, rNumbers = updRs}
                   des   = ((mRs !! 2),(mRs !! 3))
                   vec   = des - pos
                   normVec = normalizeV vec
-                  newE  = Enemy pos normVec 100 NormalE
+                  newE  = Enemy pos normVec 100
                   eList = newE : (enemies gs)
 
 encloseInt :: Int -> Int

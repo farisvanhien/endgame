@@ -11,9 +11,6 @@ view :: GameState -> IO Picture
 view gs = (combIOPic . sequence)(list)
         where list = showIOString : [(return . viewPure) gs]
 
-view1 :: GameState -> IO Picture
-view1 = (return . viewPure)
-        
 viewPure :: GameState -> Picture
 viewPure gstate@(GameState {infoToShow = info}) = Pictures (combinePicture info)
 

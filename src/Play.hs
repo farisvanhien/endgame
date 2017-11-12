@@ -17,7 +17,6 @@ data Enemy = Enemy {
                  ePos    :: Point
                , eDir    :: Vector
                , eHealth :: Int
-               , eType   :: EType
                    }
              deriving (Show)
            
@@ -27,11 +26,6 @@ data Bullet = Bullet {
                , bDamage :: Int
                      }
             deriving (Show)
-                     
-data EType = NormalE
-           | DamageE
-           | HealthE
-           deriving (Show)
            
 data Particle = Particle {
                         parPos :: Point 
@@ -40,9 +34,6 @@ data Particle = Particle {
                       , parColor :: Color
                       , parSize   :: Float
                          }
-          
-plusVec :: Vector -> Vector -> Vector
-plusVec (x1, y1) (x2, y2) = ((x1 + x2),(y1 + y2))
             
 moveSpeed :: Float
 moveSpeed = 5
@@ -67,10 +58,6 @@ getX :: Point -> Float
 getX (x,_) = x
 getY :: Point -> Float
 getY (_,y) = y
-{-
-normalizeVector :: Vector -> Vector
-normalizeVector (f1, f2) = ((f1/l), (f2/l))
-                               where l = sqrt(f1*f1 + f2*f2)-}
                                
 movePoint :: Point -> Vector -> Point
 movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
