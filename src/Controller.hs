@@ -41,7 +41,6 @@ step secs gstate@(GameState {player = pp, playStatus = status})
         gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
                        where popup = ShowAString (-360) 0 "Game Over"
         
-        
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate {infoToShow = [printPlayer mpp], player = mpp}
                   where mpp = move (player gstate)

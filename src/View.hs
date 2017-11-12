@@ -12,7 +12,6 @@ view :: GameState -> IO Picture
 view gs = (combIOPic . sequence)(list)
         where list = [(return . viewPure) gs]
 
-
 view1 :: GameState -> IO Picture
 view1 = (return . viewPure)
         
