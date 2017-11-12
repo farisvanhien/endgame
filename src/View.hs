@@ -9,8 +9,13 @@ import Model
 --import Play
 
 view :: GameState -> IO Picture
-view = return . viewPure
+view gs = (combIOPic . sequence)(list)
+        where list = [(return . viewPure) gs]
 
+
+view1 :: GameState -> IO Picture
+view1 = (return . viewPure)
+        
 viewPure :: GameState -> Picture
 viewPure gstate@(GameState {infoToShow = info}) = Pictures (combinePicture info)
 
@@ -18,9 +23,13 @@ combinePicture :: [InfoToShow] -> [Picture]
 combinePicture [] = [blank]
 combinePicture (x:xs) = (infoToPicture x) : combinePicture xs
 
+combIOPic :: IO [Picture] -> IO Picture
+combIOPic a = do p <- a
+                 return (Pictures p)
+
 infoToPicture :: InfoToShow -> Picture
 infoToPicture info = case info of
   ShowNothing   -> blank
-  ShowANumber n -> color green (text (show n))
+  ShowANumber x y s n -> translate x y (scale s s (color white (text (show n))))
   ShowAChar   c -> color green (text [c])
   ShowACircle x y c r -> translate x y (color c (circleSolid r))            
