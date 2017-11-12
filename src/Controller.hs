@@ -29,17 +29,21 @@ step secs gstate@(GameState {player = pp, playStatus = status})
 -}
   = -- Just update the elapsed time
     return $ newGS
-  where newGS | status == Playing  = updateEntities gstate
-              | status == GameOver = gameOverScreen gstate
-              | otherwise          = gstate
+  where newGS | status == Playing   = updateEntities gstate
+              | status == GameOver  = gameOverScreen gstate
+			  | status == WriteFile = write gstate
+              | otherwise           = gstate
         updateEntities = movePlayer >>> stayInField
                          >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
                          >>> moveEbullets >>> movePBullets >>> deleteOutOfField 
                          >>> pBulletCollision >>> deleteDeadEnemies
                          >>> eBulletCollision >>> playerAlive
-                         >>> makeInfoList 
+                         >>> makeInfoList
         gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
+		write gs = setHighscore gs >>> switch
                        where popup = ShowAString (-360) 0 "Game Over"
+							 switch = gs {playStatus = GameOver}
+		
         
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate {infoToShow = [printPlayer mpp], player = mpp}
@@ -220,7 +224,7 @@ delDeadEs ((e:es),e2,i) | isDead e  = delDeadEs (es,e2,(i+10))
                         | otherwise = delDeadEs (es,(e:e2),i)
 
 playerAlive :: GameState -> GameState 
-playerAlive gs | isDead (player gs) = gs {playStatus = GameOver}
+playerAlive gs | isDead (player gs) = gs {playStatus = WriteFile}
                | otherwise = gs
                         
 --Let the enemies shoot at random times
