@@ -31,7 +31,7 @@ catchIO = Exception.catch
 version :: Version
 version = Version [0,1,0,0] []
 prefix, bindirrel :: FilePath
-prefix        = "C:\\Users\\Jeroen\\AppData\\Roaming\\cabal"
+prefix        = "D:\\School\\fp\\8.2.1\\endgame\\.cabal-sandbox"
 bindirrel     = "bin"
 
 getBinDir :: IO FilePath

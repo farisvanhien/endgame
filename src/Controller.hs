@@ -319,3 +319,45 @@ printBullets bullets@(x:xs) = map printBullet bullets
 printBullet :: Bullet -> InfoToShow
 printBullet (Bullet {bPos = pos}) = f1 pos
     where f1 (x, y) = ShowACircle x y playerBulletColor playerBulletRadius
+    
+--Create particles when enemy dies (has to be called before deleteDeadEnemies)
+deadParticles :: GameState -> GameState
+deadParticles gs@(GameState {enemies = es, rNumbers = rands, particles = parts}) 
+        = gs {particles = newPs}
+        where newPs = (genPart) ++ parts
+              f1 = deadEnemy (es,[],rands)
+              genPart = getP f1 
+              getP (_,p,_) = p
+        
+deadEnemy :: ([Enemy],[Particle],[Int]) -> ([Enemy],[Particle],[Int])
+deadEnemy g@([],_,_) = g
+deadEnemy ((e:es),ps,rands) | isDead e  = deadEnemy (es,newParts,(drop 40 rands))
+                            | otherwise = deadEnemy (es,ps,rands)
+    where newParts = (f1 10 [] rands) ++ ps
+          f1 0 p r = p
+          f1 n p r = f1 (n-1) (newP) (drop 2 r) 
+                   where newP = (newPart r2 (ePos e)) : p
+                         r2 = take 2 r
+                                  
+newPart :: [Int] -> Point -> Particle                
+newPart rs des = newPart
+               where  guardRs = map (\x -> (mod x 40) - 20) rs
+                      mRs = map fromIntegral guardRs
+                      pos = ((mRs !! 0),(mRs !! 1)) + des
+                      vec = mulSV 0.2 (des - pos)
+                      newPart = Particle {parPos = pos, parDir = vec, stepsToLive = 5, parColor = red, parSize = 0}
+
+updateParticles :: GameState -> GameState
+updateParticles gs@(GameState {particles = parts})
+    = gs {particles = newParts}
+    where newParts = map f1 parts
+          f1 = (incrSize . decrStep . move)
+          decrStep p = p {stepsToLive = (stepsToLive p) - 1}
+          incrSize p = p {parSize = (parSize p) + 1}
+    
+deleteParticles :: GameState -> GameState
+deleteParticles gs@(GameState {particles = parts})
+    = gs {particles = newParts}
+    where dead (Particle {stepsToLive = s}) = s <= 0
+          newParts = filter (not . dead) parts
+          
