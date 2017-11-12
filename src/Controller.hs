@@ -36,8 +36,9 @@ step secs gstate@(GameState {player = pp, playStatus = status})
 			  | otherwise           = return $ gstate
 		updateEntities = movePlayer >>> stayInField
                          >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
-                         >>> moveEbullets >>> movePBullets >>> deleteOutOfField 
-                         >>> pBulletCollision >>> deleteDeadEnemies
+                         >>> moveEbullets >>> movePBullets >>> deleteOutOfField >>> pBulletCollision
+                         >>> deadParticles >>> updateParticles >>> deleteParticles
+                         >>> deleteDeadEnemies
                          >>> eBulletCollision >>> playerAlive
                          >>> makeInfoList
 		gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
@@ -71,7 +72,8 @@ makeInfoList gstate = gstate {infoToShow = newList}
           es  = enemies  gstate
           sco = score    gstate
           bs2 = eBullets gstate
-          newList = (printScore sco) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1]
+          pars = particles gstate
+          newList = (printScore (length pars)) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1] ++ (printParticles pars)
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
 		  
 setHighscore :: GameState -> IO GameState	  
@@ -292,6 +294,7 @@ shoot xPos yPos gstate = gstate {pBullets = list}
             list = bullet : (pBullets gstate)
             playerPos = pPos (player gstate)
 
+--stop player from moving when they release the key
 stopMove :: Char -> GameState -> GameState
 stopMove c gs = gs {player = setDir newVec (player gs)}
     where newVec = ((getPX c),(getPY c))
@@ -339,27 +342,27 @@ deadEnemy :: ([Enemy],[Particle],[Int]) -> ([Enemy],[Particle],[Int])
 deadEnemy g@([],_,_) = g
 deadEnemy ((e:es),ps,rands) | isDead e  = deadEnemy (es,newParts,(drop 40 rands))
                             | otherwise = deadEnemy (es,ps,rands)
-    where newParts = (f1 10 [] rands) ++ ps
+    where newParts = (f1 20 [] rands) ++ ps
           f1 0 p r = p
           f1 n p r = f1 (n-1) (newP) (drop 2 r) 
                    where newP = (newPart r2 (ePos e)) : p
                          r2 = take 2 r
                                   
 newPart :: [Int] -> Point -> Particle                
-newPart rs des = newPart
-               where  guardRs = map (\x -> (mod x 40) - 20) rs
+newPart rs pos = newPart
+               where  guardRs = map (\x -> (mod x 20) - 10) rs
                       mRs = map fromIntegral guardRs
-                      pos = ((mRs !! 0),(mRs !! 1)) + des
+                      des = ((mRs !! 0),(mRs !! 1)) + pos
                       vec = mulSV 0.2 (des - pos)
-                      newPart = Particle {parPos = pos, parDir = vec, stepsToLive = 5, parColor = red, parSize = 0}
+                      newPart = Particle {parPos = pos, parDir = vec, stepsToLive = 30, parColor = red, parSize = 10}
 
 updateParticles :: GameState -> GameState
 updateParticles gs@(GameState {particles = parts})
     = gs {particles = newParts}
     where newParts = map f1 parts
-          f1 = (incrSize . decrStep . move)
+          f1 p = (decrSize . decrStep . move) p
           decrStep p = p {stepsToLive = (stepsToLive p) - 1}
-          incrSize p = p {parSize = (parSize p) + 1}
+          decrSize p = p {parSize = (parSize p) - 0.3}
     
 deleteParticles :: GameState -> GameState
 deleteParticles gs@(GameState {particles = parts})
@@ -367,3 +370,10 @@ deleteParticles gs@(GameState {particles = parts})
     where dead (Particle {stepsToLive = s}) = s <= 0
           newParts = filter (not . dead) parts
           
+printParticles :: [Particle] -> [InfoToShow]
+printParticles [] = []
+printParticles parts@(x:xs) = map printParticle parts
+
+printParticle :: Particle -> InfoToShow
+printParticle (Particle {parPos = pos, parColor = col, parSize = pSize}) = f1 pos
+    where f1 (x,y) = ShowACircle x y col pSize
