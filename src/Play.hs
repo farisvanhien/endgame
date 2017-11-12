@@ -61,7 +61,7 @@ enemyColor = red
 enemyRadius :: Float
 enemyRadius = 15
 enemyBulletDamage :: Int
-enemyBulletDamage = 10
+enemyBulletDamage = 20
 
 getX :: Point -> Float
 getX (x,_) = x
