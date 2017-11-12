@@ -74,8 +74,7 @@ makeInfoList gstate = gstate {infoToShow = newList}
 setHighscore :: GameState -> IO()		  
 setHighscore gs =
 		do file <- readFile "/data/Highscore.txt"
-			writeFile "/data/Highscore.txt" (highscore gs file)
-			return ()
+		   writeFile "/data/Highscore.txt" (highscore gs file)
 		  
 highscore :: GameState -> String -> String
 highscore gs s | score gs > highscoreS = scoreS
