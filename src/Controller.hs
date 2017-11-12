@@ -206,8 +206,6 @@ delDeadEs g@([],_,_)    = g
 delDeadEs ((e:es),e2,i) | isDead e  = delDeadEs (es,e2,(i+10))
                         | otherwise = delDeadEs (es,(e:e2),i)
 
-<<<<<<< HEAD
-=======
 playerAlive :: GameState -> GameState 
 playerAlive gs | isDead (player gs) = gs {playStatus = GameOver}
                | otherwise = gs
@@ -232,7 +230,6 @@ shootEnemy ((e:es),bullets,rands,p) = shootEnemy (es,(newB ++ bullets),newRands,
           normDir  = 10*(normalizeV newDir)
 
              
->>>>>>> 94813217b7b182131c7a40741d5a5e31ae1d7554
 printEnemies :: [Enemy] -> [InfoToShow]
 printEnemies [] = []
 printEnemies xx@(x:xs) = map printEnemy xx
