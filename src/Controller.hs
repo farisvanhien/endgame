@@ -70,6 +70,21 @@ makeInfoList gstate = gstate {infoToShow = newList}
           bs2 = eBullets gstate
           newList = (printScore sco) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1]
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
+		  
+setHighscore :: GameState -> IO()		  
+setHighscore gs =
+		do file <- readFile "/data/Highscore.txt"
+			writeFile "/data/Highscore.txt" (highscore gs file)
+			return ()
+		  
+highscore :: GameState -> String -> String
+highscore gs s | score gs > highscoreS = scoreS
+			   | otherwise		 	   = s
+			   where 
+			   highscoreS = read s
+			   scoreS	  = show (score gs)
+
+
               
 togglePause :: GameState -> GameState
 togglePause gs@(GameState {playStatus = ps})

@@ -28,7 +28,6 @@ data GameState = GameState {
                  , pBullets    :: [Bullet]
                  , enemies     :: [Enemy]
                  , eBullets    :: [Bullet]
-                 , particle    :: 
                  , rNumbers    :: [Int]
                  , score       :: Int
                  }
