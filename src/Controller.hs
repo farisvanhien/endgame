@@ -10,7 +10,7 @@ import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Data.Vector
 import System.Random
 import Play
-import View -- try not
+import View 
 import Data.Maybe
 
 
@@ -202,7 +202,6 @@ bulletEnemyCol (b,(x:xs),e2)
 deleteDeadEnemies :: GameState -> GameState
 deleteDeadEnemies gs = gs {enemies = newEs, score = newS}
     where oldList = enemies gs
-          --newEs = filter (not . isDead) oldList
           newList = delDeadEs (oldList,[],0)
           newEs   = getE newList
           newS    = (getS newList) + (score gs)
