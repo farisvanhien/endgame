@@ -18,7 +18,7 @@ nO_SECS_BETWEEN_CYCLES = 5
 data PlayStatus = Playing
                 | Paused
                 | GameOver
-				| WriteFile
+                | WriteFile
                 deriving (Eq, Show)
 
 data GameState = GameState {
@@ -29,7 +29,7 @@ data GameState = GameState {
                  , pBullets    :: [Bullet]
                  , enemies     :: [Enemy]
                  , eBullets    :: [Bullet]
-                 , particles   :: {Particle]
+                 , particles   :: [Particle]
                  , rNumbers    :: [Int]
                  , score       :: Int
                  }
