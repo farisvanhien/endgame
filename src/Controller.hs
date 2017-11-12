@@ -187,9 +187,6 @@ delDeadEs g@([],_,_)    = g
 delDeadEs ((e:es),e2,i) | isDead e  = delDeadEs (es,e2,(i+10))
                         | otherwise = delDeadEs (es,(e:e2),i)
 
-
-
-             
 printEnemies :: [Enemy] -> [InfoToShow]
 printEnemies [] = []
 printEnemies xx@(x:xs) = map printEnemy xx
