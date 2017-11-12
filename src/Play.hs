@@ -67,11 +67,7 @@ getX :: Point -> Float
 getX (x,_) = x
 getY :: Point -> Float
 getY (_,y) = y
-{-
-normalizeVector :: Vector -> Vector
-normalizeVector (f1, f2) = ((f1/l), (f2/l))
-                               where l = sqrt(f1*f1 + f2*f2)-}
-                               
+
 movePoint :: Point -> Vector -> Point
 movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 
