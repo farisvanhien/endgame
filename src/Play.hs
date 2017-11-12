@@ -58,7 +58,7 @@ getX :: Point -> Float
 getX (x,_) = x
 getY :: Point -> Float
 getY (_,y) = y
-                               
+
 movePoint :: Point -> Vector -> Point
 movePoint (p1, p2) (v1, v2) = ((p1+v1), (p2+v2))
 
