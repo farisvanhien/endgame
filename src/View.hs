@@ -1,7 +1,6 @@
 -- | This module defines how to turn
 --   the game state into a picture
 module View where
-
 import Control.Arrow
 import Graphics.Gloss
 import Graphics.Gloss.Data.Picture
@@ -10,7 +9,7 @@ import Model
 
 view :: GameState -> IO Picture
 view gs = (combIOPic . sequence)(list)
-        where list = [(return . viewPure) gs]
+        where list = showIOString : [(return . viewPure) gs]
 
 view1 :: GameState -> IO Picture
 view1 = (return . viewPure)
@@ -26,6 +25,15 @@ combIOPic :: IO [Picture] -> IO Picture
 combIOPic a = do p <- a
                  return (Pictures p)
 
+fieldWidth :: Float 
+fieldWidth = 400
+fieldHeight :: Float
+fieldHeight = 400
+
+showIOString :: IO Picture    
+showIOString = do file <- readFile "./data/Highscore.txt"
+                  return (translate (fieldWidth - 100) (fieldHeight - 30) (scale 0.2 0.2 (color white (text ("HI " ++ file)))))
+                 
 infoToPicture :: InfoToShow -> Picture
 infoToPicture info = case info of
   ShowNothing   -> blank

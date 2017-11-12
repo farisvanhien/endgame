@@ -73,7 +73,7 @@ makeInfoList gstate = gstate {infoToShow = newList}
           bs2 = eBullets gstate
           newList = (printScore sco) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1]
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
-		  
+
 setHighscore :: GameState -> IO GameState	  
 setHighscore gs =
 		do file <- readFile "./data/Highscore.txt"
@@ -89,8 +89,6 @@ highscore gs s | score gs > highscoreS = scoreS
 			   highscoreS = read s
 			   scoreS	  = show (score gs)
 
-
-              
 togglePause :: GameState -> GameState
 togglePause gs@(GameState {playStatus = ps})
     | ps == Playing = gs {playStatus = Paused}
@@ -276,11 +274,6 @@ deleteOutOfField gs = gs {pBullets = newPBL, eBullets = newEBL}
                         
 pointInField :: Point -> Bool
 pointInField p@(x,y) = (x > (-fieldWidth)) && (x < fieldWidth) && (y > (-fieldHeight)) && (y < fieldHeight)
-
-fieldWidth :: Float 
-fieldWidth = 400
-fieldHeight :: Float
-fieldHeight = 400
   
 shoot :: Float -> Float -> GameState -> GameState
 shoot xPos yPos gstate = gstate {pBullets = list}
