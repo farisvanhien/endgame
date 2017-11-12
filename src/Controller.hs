@@ -115,7 +115,7 @@ newEnemy gs = gs {enemies = eList, rNumbers = updRs}
                   des   = ((mRs !! 2),(mRs !! 3))
                   vec   = des - pos
                   normVec = normalizeV vec
-                  newE  = Enemy pos normVec 100 NormalE
+                  newE  = Enemy pos normVec 100
                   eList = newE : (enemies gs)
 
 encloseInt :: Int -> Int

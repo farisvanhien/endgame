@@ -17,7 +17,6 @@ data Enemy = Enemy {
                  ePos    :: Point
                , eDir    :: Vector
                , eHealth :: Int
-               , eType   :: EType
                    }
              deriving (Show)
            
@@ -27,11 +26,6 @@ data Bullet = Bullet {
                , bDamage :: Int
                      }
             deriving (Show)
-                     
-data EType = NormalE
-           | DamageE
-           | HealthE
-           deriving (Show)
            
 data Particle = Particle {
                         parPos :: Point 
