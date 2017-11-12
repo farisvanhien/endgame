@@ -34,7 +34,7 @@ step secs gstate@(GameState {player = pp, playStatus = status})
               | status == GameOver  = return $ gameOverScreen gstate
               | status == WriteFile = setHighscore gstate
               | otherwise           = return $ gstate
-		updateEntities = movePlayer >>> stayInField
+        updateEntities = movePlayer >>> stayInField
                          >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
                          >>> moveEbullets >>> movePBullets >>> deleteOutOfField >>> pBulletCollision
                          >>> deadParticles >>> updateParticles >>> deleteParticles
