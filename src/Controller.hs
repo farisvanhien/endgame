@@ -29,13 +29,17 @@ step secs gstate@(GameState {player = pp, playStatus = status})
 -}
   = -- Just update the elapsed time
     return $ newGS
-  where newGS | status == Playing = updateEntities gstate
-              | otherwise         = gstate
+  where newGS | status == Playing  = updateEntities gstate
+              | status == GameOver = gameOverScreen gstate
+              | otherwise          = gstate
         updateEntities = movePlayer >>> stayInField
-                         >>> spawnEnemy >>> moveEnemies >>> enemiesInField
-                         >>> movePBullets >>> deleteOutOfField 
-                         >>> bulletCollision >>> deleteDeadEnemies
+                         >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
+                         >>> moveEbullets >>> movePBullets >>> deleteOutOfField 
+                         >>> pBulletCollision >>> deleteDeadEnemies
+                         >>> eBulletCollision >>> playerAlive
                          >>> makeInfoList 
+        gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
+                       where popup = ShowAString (-360) 0 "Game Over"
         
         
 movePlayer :: GameState -> GameState
@@ -64,23 +68,24 @@ makeInfoList gstate = gstate {infoToShow = newList}
           bs1 = pBullets gstate
           es  = enemies  gstate
           sco = score    gstate
-          newList = (printScore sco) : (printBullets bs1) ++ (printEnemies es) ++ [printPlayer p1]
+          bs2 = eBullets gstate
+          newList = (printScore sco) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1]
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
               
 togglePause :: GameState -> GameState
 togglePause gs@(GameState {playStatus = ps})
     | ps == Playing = gs {playStatus = Paused}
-    | otherwise     = gs {playStatus = Playing}
+    | ps == Paused  = gs {playStatus = Playing}
+    | otherwise     = gs
               
 --move player bullets
 movePBullets :: GameState -> GameState
 movePBullets gs@(GameState {pBullets = bs})
-    = gs {pBullets = moveB bs}
-
-moveB :: [Bullet] -> [Bullet]
-moveB [] = []
-moveB (x:xs) = (move x) : (moveB xs)
-
+    = gs {pBullets = map move bs}
+    
+moveEbullets :: GameState -> GameState
+moveEbullets gs@(GameState {eBullets = bs})
+    = gs {eBullets = map move bs}
 
 spawnEnemy :: GameState -> GameState
 spawnEnemy gs = newGS
@@ -137,22 +142,36 @@ appointEnemy ((x:xs), es2, rands) | (not . pointInField) (ePos x)
                                         normVec = normalizeV vec
                                         newE  = x {eDir = normVec}
                                      
-                                     
-                                     
-                                     
-                                     
-                                     
-bulletCollision :: GameState -> GameState
-bulletCollision gs = gs {pBullets = newBullets, enemies = newEs}
-    where doCollision = checkBullet ((pBullets gs),[],(enemies gs))
+eBulletCollision :: GameState -> GameState
+eBulletCollision gs = gs {player = newPlayer, eBullets = newEBulls}
+                    where newTuple = checkEBullet ((eBullets gs), [], (player gs))
+                          newPlayer = getP newTuple
+                          newEBulls = getB newTuple
+                          getP (_,_,p) = p
+                          getB (_,b,_) = b
+
+checkEBullet :: ([Bullet], [Bullet], Player) -> ([Bullet], [Bullet], Player)
+checkEBullet g@([],_,_) = g 
+checkEBullet ((b:bs), bs2, p) = checkEBullet (bs, (newB ++ bs2), newP)
+    where newT  | detectHit (bPos b) (pPos p) playerRadius 
+                   = ([],(damage p (bDamage b)))
+                | otherwise = ([b],p)
+          newB = getB newT 
+          newP = getP newT
+          getB (b,_) = b
+          getP (_,p) = p
+           
+pBulletCollision :: GameState -> GameState
+pBulletCollision gs = gs {pBullets = newBullets, enemies = newEs}
+    where doCollision = checkPBullet ((pBullets gs),[],(enemies gs))
           newBullets  = getB doCollision
           newEs       = getE doCollision
           getB (_,b,_) = b
           getE (_,_,e) = e
 
-checkBullet :: ([Bullet], [Bullet], [Enemy]) -> ([Bullet], [Bullet], [Enemy])
-checkBullet g@([], b2, es)   = g
-checkBullet ((x:xs), b2, es) = checkBullet (xs, (bul ++ b2), newEs)
+checkPBullet :: ([Bullet], [Bullet], [Enemy]) -> ([Bullet], [Bullet], [Enemy])
+checkPBullet g@([], b2, es)   = g
+checkPBullet ((x:xs), b2, es) = checkPBullet (xs, (bul ++ b2), newEs)
                              where checkCol = bulletEnemyCol (Just x, es, [])
                                    bul   = getB checkCol
                                    newEs = getE checkCol
@@ -187,7 +206,28 @@ delDeadEs g@([],_,_)    = g
 delDeadEs ((e:es),e2,i) | isDead e  = delDeadEs (es,e2,(i+10))
                         | otherwise = delDeadEs (es,(e:e2),i)
 
-
+playerAlive :: GameState -> GameState 
+playerAlive gs | isDead (player gs) = gs {playStatus = GameOver}
+               | otherwise = gs
+                        
+--Let the enemies shoot at random times
+shootEnemies :: GameState -> GameState
+shootEnemies gs@(GameState {enemies = eList, rNumbers = rNums, eBullets = eBulls})
+    = gs {rNumbers = (newRands newT), eBullets = ((newEBullets newT) ++ eBulls)}
+    where newT = shootEnemy (eList,[],rNums,(player gs))
+          newRands (_,_,rs,_) = rs
+          newEBullets (_,bs,_,_) = bs
+    
+shootEnemy :: ([Enemy],[Bullet],[Int],Player) -> ([Enemy],[Bullet],[Int],Player)
+shootEnemy g@([],_,_,_)           = g
+shootEnemy ((e:es),bullets,rands,p) = shootEnemy (es,(newB ++ bullets),newRands,p)
+    where r        = head (take 1 rands)
+          newRands = drop 1 rands
+          digit    = mod r 500
+          newB     | digit ==  1 = [Bullet {bPos = (ePos e),bDir = normDir, bDamage = enemyBulletDamage}]
+                   | otherwise   = []
+          newDir   = (pPos p) - (ePos e)
+          normDir  = 10*(normalizeV newDir)
 
              
 printEnemies :: [Enemy] -> [InfoToShow]
@@ -210,8 +250,9 @@ stayInField gs = gs {player = setPos newPos (player gs)}
                            | otherwise = getY pos
                            
 deleteOutOfField :: GameState -> GameState                           
-deleteOutOfField gs = gs {pBullets = newBL}
-                    where newBL = filter p (pBullets gs)
+deleteOutOfField gs = gs {pBullets = newPBL, eBullets = newEBL}
+                    where newPBL = filter p (pBullets gs)
+                          newEBL = filter p (eBullets gs)
                           p (Bullet {bPos = pos}) = (pointInField pos)
                         
 pointInField :: Point -> Bool
