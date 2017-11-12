@@ -32,4 +32,5 @@ infoToPicture info = case info of
   ShowNothing   -> blank
   ShowANumber x y s n -> translate x y (scale s s (color white (text (show n))))
   ShowAChar   c -> color green (text [c])
+  ShowAString x y s -> translate x y (color white (text s))
   ShowACircle x y c r -> translate x y (color c (circleSolid r))            
