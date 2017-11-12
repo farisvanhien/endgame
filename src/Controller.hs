@@ -29,11 +29,11 @@ step secs gstate@(GameState {player = pp, playStatus = status})
 -}
   
   = newGS
-		where  
-		newGS | status == Playing   = return $ updateEntities gstate
-			  | status == GameOver  = return $ gameOverScreen gstate
-			  | status == WriteFile = setHighscore gstate
-			  | otherwise           = return $ gstate
+        where  
+        newGS | status == Playing   = return $ updateEntities gstate
+              | status == GameOver  = return $ gameOverScreen gstate
+              | status == WriteFile = setHighscore gstate
+              | otherwise           = return $ gstate
 		updateEntities = movePlayer >>> stayInField
                          >>> spawnEnemy >>> moveEnemies >>> enemiesInField >>> shootEnemies 
                          >>> moveEbullets >>> movePBullets >>> deleteOutOfField >>> pBulletCollision
@@ -41,9 +41,9 @@ step secs gstate@(GameState {player = pp, playStatus = status})
                          >>> deleteDeadEnemies
                          >>> eBulletCollision >>> playerAlive
                          >>> makeInfoList
-		gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
-						where 
-						popup = ShowAString (-360) 0 "Game Over"	
+        gameOverScreen gs = gs {infoToShow = (popup) : (infoToShow gs)}
+                        where 
+                        popup = ShowAString (-360) 0 "Game Over"	
         
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate {infoToShow = [printPlayer mpp], player = mpp}
@@ -73,7 +73,7 @@ makeInfoList gstate = gstate {infoToShow = newList}
           sco = score    gstate
           bs2 = eBullets gstate
           pars = particles gstate
-          newList = (printScore (length pars)) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1] ++ (printParticles pars)
+          newList = (printScore (sco)) : (printBullets bs1) ++ (printBullets bs2) ++ (printEnemies es) ++ [printPlayer p1] ++ (printParticles pars)
           printScore sco = ShowANumber (-fieldWidth + 10) (fieldHeight - 30) 0.2 sco
 
 setHighscore :: GameState -> IO GameState	  
